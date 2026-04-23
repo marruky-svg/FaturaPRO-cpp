@@ -1,0 +1,14 @@
+#Build artifacts
+build/
+*.o
+*.a
+
+# SQLite databases
+*.db
+*db-journal
+# IDE
+.vscode/
+.idea/
+*.xcodeproj/
+# macOS
+.DS_Store
