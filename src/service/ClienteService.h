@@ -47,10 +47,10 @@ class ClienteService
 
     void validarEmail(const std::string& email)
     {
-        if(email.empty())
-            return;
-        if (email.find('@') == std::string::npos)   
-            throw std::runtime_error("Email inválido");
+        if (email.empty()) return;
+        std::regex padrao(R"(^[^\s@]+@[^\s@]+\.[^\s@]+$)");
+        if (!std::regex_match(email, padrao))
+            throw std::runtime_error("Email invalido");
     }
 
     
