@@ -99,4 +99,7 @@ class Fatura
     void setID(int id) {m_id = id;}
     void setID_Cliente(int id_cliente) {m_id_cliente = id_cliente;}
     void setCriadaEm(const std::string& data) {m_criada_em = data;}
+    void setSubtotal(double subtotal) {m_subtotal = subtotal;}
+    void setTotalIVA(double totalIva) {m_total_iva = totalIva;}
+    void setTotal(double total) {m_total = total;}
 };
