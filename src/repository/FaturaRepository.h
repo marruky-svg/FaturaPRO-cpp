@@ -3,7 +3,8 @@
 #include "domain/LinhaFatura.h"
 #include "util/Database.hpp"
 #include "util/Statement.hpp"
-
+#include <sstream>
+#include <iomanip>
 
 class FaturaRepository
 {
@@ -130,6 +131,7 @@ class FaturaRepository
             //CRIANDO AS LINHAS DA FATURA
             Statement stmt_linha(m_db.obterHandle(), "SELECT id, id_fatura, id_produto, descricao, quantidade, preco_unitario, desconto, taxa_iva, subtotal FROM linhas_fatura WHERE id_fatura = ?");
             stmt_linha.vincularInteiro(1, fatura.getID());
+            
             while(stmt_linha.passo())
             {
                 LinhaFatura linha(
@@ -149,4 +151,28 @@ class FaturaRepository
         }
         return faturas;
     }
+
+    std::string obterProximoNumero(int ano)
+    {
+        std::string padrao = "FT " + std::to_string(ano) + "/%";
+
+        Statement stmt(m_db.obterHandle(), "SELECT COUNT(*) FROM faturas WHERE numero LIKE ?");
+        stmt.vincularTexto(1, padrao);
+        // EXECUTAR O COUNT - ELE SEMPRE DEVOLVE UMA LINHA 
+        stmt.passo();
+        // LER O NUMERO DA FATURA
+        int count = stmt.obterInteiro(0);
+
+        // O PROXIMO PASSO E O SEGUINTE AO COUNT ATUAL
+        int proximoNumero = count + 1;
+
+        // Formatar a string final "FT 2026/00042"
+        // std::setw(5) garante 5 caracteres de largura
+        // std::setfill('0') preenche com zeros à esquerda
+        std::stringstream ss;
+        ss << "FT " << ano << "/"<< std::setw(5) << std::setfill('0') << proximoNumero;
+
+        return ss.str();
+    }
+
 };
