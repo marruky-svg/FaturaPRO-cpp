@@ -31,7 +31,6 @@ class ProdutoService
     void criarProduto(const Produto& produto)
     {
         validarProduto(produto);
-        
         //VERIFICAR SKU DUPLICADO
         auto resultado = m_repo.buscarPorSKU(produto.getSKU());
         if(resultado.has_value())

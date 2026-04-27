@@ -52,9 +52,9 @@ class Fatura
     }
 
     //CONVERSOR
-    std::string estadoToString(const EstadoFatura& estado)
+    std::string estadoToString()
     {
-        switch(estado)
+        switch(m_estadoFatura)
         {
             case EstadoFatura::Anulada: return "anulada";
             case EstadoFatura::Emitida: return "emitida";
@@ -87,6 +87,7 @@ class Fatura
     const std::string& getObservacao() const {return m_observacao;}
     const std::string& getCriadaEm() const {return m_criada_em;}
     const std::vector<LinhaFatura>& getLinhas() const {return m_linhas;}
+    std::vector<LinhaFatura>& getLinhasMut() {return m_linhas;}
 
     //SETTERS
     void setDescontoGlobal(double desconto) {m_desconto_global = desconto;}
@@ -95,5 +96,7 @@ class Fatura
     void setDataVencimento(const std::string& data) {m_data_vencimento = data;}
     void setEstadoFatura(EstadoFatura estado) {m_estadoFatura = estado;}
     void setObservacao (const std::string& observacao) {m_observacao = observacao;}
-
+    void setID(int id) {m_id = id;}
+    void setID_Cliente(int id_cliente) {m_id_cliente = id_cliente;}
+    void setCriadaEm(const std::string& data) {m_criada_em = data;}
 };

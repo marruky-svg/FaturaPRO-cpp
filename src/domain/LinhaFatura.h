@@ -33,7 +33,8 @@ class LinhaFatura
     //SETTERS
     void setQuantidade(int qtd){m_quantidade = qtd;}
     void setDesconto(double desconto){m_desconto = desconto;}
-
+    void setFaturaID(int id) {m_fatura_id = id;}
+    void setID(int id) {m_id = id;}
     //METODOS 
     double calcularSubtotal() const 
     {
