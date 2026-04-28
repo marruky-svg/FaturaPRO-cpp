@@ -106,4 +106,39 @@ class FaturaService
 
         m_faturaRepo.atualizar(fatura);
     }
+
+    Fatura obterFatura(int id)
+    {
+        auto procurarFatura = m_faturaRepo.buscarPorID(id);
+        if(!procurarFatura.has_value())
+            throw std::runtime_error("Fatura não existe");
+        
+        Fatura fatura = *procurarFatura;
+        return fatura;
+    }
+
+    std::vector<Fatura> listarTodos(int pagina, int tamanho)
+    {
+        if(pagina < 1)
+            throw std::runtime_error("Página tem que ser maior que 0");
+
+        if(tamanho < 1 || tamanho > 100)
+            throw std::runtime_error("Tamanho tem de estar entre 1 e 100");
+        
+        int offset = (pagina - 1) * tamanho; 
+        return m_faturaRepo.buscarTodos(tamanho, offset);
+    }
+
+    void atualizarRascunho(Fatura& fatura)
+    {
+        auto procuraFatura = m_faturaRepo.buscarPorID(fatura.getID());
+        if(!procuraFatura.has_value())
+            throw std::runtime_error("Fatura não existe");
+        
+        if(fatura.getEstadoFatura() != EstadoFatura::Rascunho)
+            throw std::runtime_error("Fatura indisponível para alteração");
+        
+        m_faturaRepo.atualizar(fatura);
+
+    }
 };
