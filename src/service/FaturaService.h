@@ -64,4 +64,46 @@ class FaturaService
         m_faturaRepo.atualizar(fatura);
         return fatura;
     }
+
+    void emitir(int faturaId)
+    {
+        auto procuraFatura = m_faturaRepo.buscarPorID(faturaId);
+        if(!procuraFatura.has_value())
+            throw std::runtime_error("Fatura não existente");
+        
+        Fatura fatura = *procuraFatura;
+        if(fatura.getEstadoFatura() != EstadoFatura::Rascunho)
+            throw std::runtime_error("Fatura não disponível para alteração");
+        
+        if(fatura.getLinhas().empty())
+            throw std::runtime_error("Fatura sem linha de produto");
+        
+        for(const auto& linha : fatura.getLinhas())
+        {    
+            auto produtoPtr = m_produtoRepo.buscarPorID(linha.getProdutoID());
+            if(!produtoPtr.has_value())
+                throw std::runtime_error("Produto não existe");
+            
+             auto produto = *produtoPtr;
+             if(produto.getStock() < linha.getQuantidade())
+                throw std::runtime_error("Stock insuficiente");
+        }
+            
+        int ano = obterAnoAtual();
+        fatura.setNumero(m_faturaRepo.obterProximoNumero(ano));
+        
+        fatura.setDataEmissao(dataAtual());
+        fatura.setDataVencimento(dataMaisDias(30));
+        fatura.setEstadoFatura(EstadoFatura::Emitida);
+        
+        for(const auto& linha : fatura.getLinhas())
+        {
+            auto produtoPtr = m_produtoRepo.buscarPorID(linha.getProdutoID());
+            auto produto = *produtoPtr;
+            produto.setStock(produto.getStock() - linha.getQuantidade());
+            m_produtoRepo.atualizar(produto);
+        }
+
+        m_faturaRepo.atualizar(fatura);
+    }
 };

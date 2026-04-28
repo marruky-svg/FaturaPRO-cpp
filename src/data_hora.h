@@ -19,3 +19,13 @@ inline int obterAnoAtual()
     auto* tm = std::localtime(&tempo);
     return tm->tm_year + 1900; //tm_year é anos desde 1900
 }
+
+inline std::string dataMaisDias(int dias)
+{
+    auto agora = std::chrono::system_clock::now();
+    auto futuro = agora + std::chrono::hours(24 * dias);
+    auto tempo = std::chrono::system_clock::to_time_t(futuro);
+    std::stringstream ss;
+    ss << std::put_time(std::localtime(&tempo), "%Y-%m-%d %H:%M:%S");
+    return ss.str();
+}
