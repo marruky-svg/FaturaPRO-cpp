@@ -52,7 +52,7 @@ class Fatura
     }
 
     //CONVERSOR
-    std::string estadoToString()
+    std::string estadoToString() const 
     {
         switch(m_estadoFatura)
         {
@@ -60,8 +60,8 @@ class Fatura
             case EstadoFatura::Emitida: return "emitida";
             case EstadoFatura::Paga: return "paga";
             case EstadoFatura::Rascunho: return "rascunho";
-            default: break;
         }
+        return "rascunho";
     }
 
     EstadoFatura stringToEstado(const std::string& estado)
