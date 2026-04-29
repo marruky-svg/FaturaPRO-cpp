@@ -121,7 +121,7 @@ class FaturaController
             }
         });
 
-        servidor.Get(R"(api/v1/faturas/(\d+))", [this](const httplib::Request& req, httplib::Response& res){
+        servidor.Get(R"(/api/v1/faturas/(\d+))", [this](const httplib::Request& req, httplib::Response& res){
             try
             {
                 int id_fatura = std::stoi(req.matches[1]);
@@ -140,14 +140,97 @@ class FaturaController
             }
         });
 
-        servidor.Post("api/v1/faturas", [this](const httplib::Request& req, httplib::Response& res){
+        servidor.Post("/api/v1/faturas", [this](const httplib::Request& req, httplib::Response& res){
             try
             {
                 json j = json::parse(req.body);
-                Fatura fatura = jsonToFatura(j);
-                m_faturaService.emitir(fatura.getID());
+                int id_cliente = j["id_cliente"];
+                Fatura fatura = m_faturaService.criarRascunho(id_cliente);
                 res.set_content(faturaToJSON(fatura).dump(), "application/json");
                 res.status = 201;
+            }
+            catch(std::runtime_error& e)
+            {
+                json erro; 
+                erro["erro"] = e.what();
+                res.set_content(erro.dump(), "application/json");
+                res.status = 400;
+            }
+        });
+
+        servidor.Put(R"(/api/v1/faturas/(\d+))", [this](const httplib::Request& req, httplib::Response& res){
+            try
+            {
+                int id_fatura = std::stoi(req.matches[1]); 
+                json j = json::parse(req.body);
+                Fatura fatura = jsonToFatura(j);
+                fatura.setID(id_fatura);
+                m_faturaService.atualizarRascunho(fatura);
+                res.set_content(faturaToJSON(fatura).dump(), "application/json");
+                res.status = 200;
+            }
+            catch(std::runtime_error& e)
+            {
+                json erro;
+                erro["erro"] = e.what();
+                res.set_content(erro.dump(), "application/json");
+                res.status = 404;
+            }
+        });
+
+        servidor.Delete(R"(/api/v1/faturas/(\d+))", [this](const httplib::Request& req, httplib::Response& res){
+            try 
+            {
+                int id_fatura = std::stoi(req.matches[1]);
+                m_faturaService.deletarRascunho(id_fatura);
+                res.status = 204;
+            }
+            catch(std::runtime_error& e)
+            {
+                json erro;
+                erro["erro"] = e.what();
+                res.set_content(erro.dump(), "application/json");
+                res.status = 404;
+            }
+        });
+
+        servidor.Post(R"(/api/v1/faturas/(\d+)/linhas)",[this](const httplib::Request& req, httplib::Response& res){
+            try 
+            {
+                int id_fatura = std::stoi(req.matches[1]);
+                json j = json::parse(req.body);
+                int id_produto = j["id_produto"];
+                int quantidade = j["quantidade"];
+
+                Fatura fatura_atualizada = m_faturaService.adicionarLinha(id_fatura, id_produto, quantidade);
+
+                res.set_content(faturaToJSON(fatura_atualizada).dump(), "application/json");
+                res.status = 201;
+            }
+            catch(std::runtime_error& e)
+            {
+                json erro;
+                erro["erro"] = e.what();
+                res.set_content(erro.dump(), "application/json");
+                res.status = 400;
+            }
+        });
+
+        servidor.Post(R"(/api/v1/faturas/(\d+)/emitir)", [this](const httplib::Request& req, httplib::Response& res){
+            try
+            {
+                int id_fatura = std::stoi(req.matches[1]);
+                m_faturaService.emitir(id_fatura);
+                Fatura fatura = m_faturaService.obterFatura(id_fatura);
+                res.set_content(faturaToJSON(fatura).dump(), "application/json");
+                res.status = 200;
+            }
+            catch(std::runtime_error& e)
+            {
+                json erro; 
+                erro["erro"] = e.what();
+                res.set_content(erro.dump(), "application/json");
+                res.status = 400;
             }
         });
     }
