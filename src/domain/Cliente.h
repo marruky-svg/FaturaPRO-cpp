@@ -75,13 +75,12 @@ class Cliente
         }
     }
 
-    TipoCliente StringToTipo(const std::string& tipo)
+    TipoCliente StringToTipo(const std::string& tipo) const
     {
-        if(tipo =="empresa" || "Empresa")
-            return TipoCliente::Empresa;
-    
-        if(tipo == "particular" || "Particular")
-            return TipoCliente::Particular;
+        if (tipo == "empresa")    return TipoCliente::Empresa;
+        if (tipo == "particular") return TipoCliente::Particular;
+        return TipoCliente::Particular;
     }
+ 
 
 };

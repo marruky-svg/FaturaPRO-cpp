@@ -28,7 +28,7 @@ class ProdutoService
     ProdutoService(ProdutoRepository& repo)
     :m_repo(repo){}
 
-    void criarProduto(const Produto& produto)
+    void criarProduto(Produto& produto)
     {
         validarProduto(produto);
         //VERIFICAR SKU DUPLICADO

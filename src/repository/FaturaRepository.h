@@ -73,6 +73,7 @@ class FaturaRepository
             return std::nullopt;
         
         Fatura fatura(stmt.obterInteiro(2));  
+        fatura.setID(stmt.obterInteiro(0));
         fatura.setNumero(stmt.obterTexto(1));
         fatura.setDataEmissao(stmt.obterTexto(3));
         fatura.setDataVencimento(stmt.obterTexto(4));
@@ -182,17 +183,18 @@ class FaturaRepository
         try
         {
             // UPDATE DA FATURA 
-            Statement stmt(m_db.obterHandle(), "UPDATE faturas SET cliente_id = ?, data_emissao = ?, data_vencimento = ?, estado = ?, subtotal = ?, total_iva = ?, total = ?, desconto_global = ?, observacoes = ? WHERE id = ?");
-            stmt.vincularInteiro(1,fatura.getID_Cliente());
-            stmt.vincularTexto(2, fatura.getDataEmissao());
-            stmt.vincularTexto(3,fatura.getDataVencimento());
-            stmt.vincularTexto(4, fatura.estadoToString());
-            stmt.vincularDecimal(5,fatura.getSubTotal());
-            stmt.vincularDecimal(6,fatura.getTotalIVA());
-            stmt.vincularDecimal(7,fatura.getTotal());
-            stmt.vincularDecimal(8, fatura.getDescontGlobal());
-            stmt.vincularTexto(9, fatura.getObservacao());
-            stmt.vincularInteiro(10, fatura.getID());
+            Statement stmt(m_db.obterHandle(), "UPDATE faturas SET numero = ?, cliente_id = ?, data_emissao = ?, data_vencimento = ?, estado = ?, subtotal = ?, total_iva = ?, total = ?, desconto_global = ?, observacoes = ? WHERE id = ?");
+            stmt.vincularTexto(1,fatura.getNumero());
+            stmt.vincularInteiro(2,fatura.getID_Cliente());
+            stmt.vincularTexto(3, fatura.getDataEmissao());
+            stmt.vincularTexto(4,fatura.getDataVencimento());
+            stmt.vincularTexto(5, fatura.estadoToString());
+            stmt.vincularDecimal(6,fatura.getSubTotal());
+            stmt.vincularDecimal(7,fatura.getTotalIVA());
+            stmt.vincularDecimal(8,fatura.getTotal());
+            stmt.vincularDecimal(9, fatura.getDescontGlobal());
+            stmt.vincularTexto(10, fatura.getObservacao());
+            stmt.vincularInteiro(11, fatura.getID());
             stmt.passo();
 
             // DELETE NAS LINHAS ANTIGAS

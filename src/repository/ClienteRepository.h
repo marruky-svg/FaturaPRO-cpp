@@ -14,7 +14,7 @@ class ClienteRepository
     ClienteRepository(Database& db)
     :m_db(db){}
 
-    void guardar(const Cliente& cliente)
+    void guardar(Cliente& cliente)
     {
         Statement stmt(m_db.obterHandle(),"INSERT INTO clientes(nif,nome,morada,codigo_postal,cidade,email,telefone,tipo,ativo) VALUES(?,?,?,?,?,?,?,?,?)");
         stmt.vincularTexto(1, cliente.getNif());
@@ -27,6 +27,8 @@ class ClienteRepository
         stmt.vincularTexto(8, cliente.TipotoString());
         stmt.vincularInteiro(9, cliente.getAtivo());
         stmt.passo();
+        int idGerado = sqlite3_last_insert_rowid(m_db.obterHandle());
+        cliente.setID(idGerado);
     }   
 
     std::optional<Cliente> buscarPorId(int id)

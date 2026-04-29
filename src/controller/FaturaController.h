@@ -92,6 +92,9 @@ class FaturaController
 
     public: 
 
+    FaturaController(FaturaService& fs)
+    :m_faturaService(fs){}
+
     void registrarRotas(httplib::Server& servidor)
     {
         servidor.Get("/api/v1/faturas", [this](const httplib::Request& req, httplib::Response& res){

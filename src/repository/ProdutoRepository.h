@@ -15,7 +15,7 @@ class ProdutoRepository
     ProdutoRepository(Database& db)
     :m_db(db){}
 
-    void guardar(const Produto& produto)
+    void guardar(Produto& produto)
     {
         Statement stmt(m_db.obterHandle(), "INSERT INTO produtos(sku,nome,descricao,preco_unitario,taxa_iva,stock,stock_minimo,tipo,ativo) VALUES(?,?,?,?,?,?,?,?,?)");
         stmt.vincularTexto(1,produto.getSKU());
@@ -28,6 +28,8 @@ class ProdutoRepository
         stmt.vincularTexto(8, produto.TipotoString());
         stmt.vincularInteiro(9, produto.getAtivo());
         stmt.passo();
+        int idGerado = sqlite3_last_insert_rowid(m_db.obterHandle());
+        produto.setID(idGerado);
     }
 
     std::optional<Produto> buscarPorID(int id)

@@ -59,7 +59,7 @@ class ClienteService
     ClienteService(ClienteRepository& repo)
     :m_repo(repo){}
 
-    void criarCliente(const Cliente& cliente)
+    void criarCliente(Cliente& cliente)
     {
        validarNif(cliente.getNif());
        validarEmail(cliente.getEmail()); 

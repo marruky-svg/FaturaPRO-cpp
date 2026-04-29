@@ -63,7 +63,7 @@ class Produto
         }
     }
 
-    TipoProduto StringToTipo(const std::string& tipo)
+    TipoProduto StringToTipo(const std::string& tipo) const 
     {
         if(tipo =="produto")
             return TipoProduto::Produto;
