@@ -92,4 +92,63 @@ class FaturaController
 
     public: 
 
+    void registrarRotas(httplib::Server& servidor)
+    {
+        servidor.Get("/api/v1/faturas", [this](const httplib::Request& req, httplib::Response& res){
+            try
+            {
+                std::string paginaStr = req.get_param_value("pagina");
+                std::string tamanhoStr = req.get_param_value("tamanho");
+
+                int pagina = paginaStr.empty() ? 1 : std::stoi(paginaStr);
+                int tamanho = tamanhoStr.empty() ? 20 : std::stoi(tamanhoStr);
+
+                auto faturas = m_faturaService.listarTodos(pagina, tamanho);
+
+                json arr = json::array();
+                for(const auto& fatura : faturas)
+                    arr.push_back(faturaToJSON(fatura));
+                
+                res.set_content(arr.dump(), "application/json");
+                res.status = 200;
+            }
+            catch(const std::runtime_error& e)
+            {
+                json erro;
+                erro["erro"] = e.what();
+                res.set_content(erro.dump(), "application/json");
+                res.status = 500;
+            }
+        });
+
+        servidor.Get(R"(api/v1/faturas/(\d+))", [this](const httplib::Request& req, httplib::Response& res){
+            try
+            {
+                int id_fatura = std::stoi(req.matches[1]);
+
+                auto fatura = m_faturaService.obterFatura(id_fatura);
+                json j = faturaToJSON(fatura);
+                res.set_content(j.dump(), "application/json");
+                res.status = 200;
+            }
+            catch(std::runtime_error& e)
+            {
+                json erro; 
+                erro["erro"] = e.what();
+                res.set_content(erro.dump(), "application/json");
+                res.status = 404;
+            }
+        });
+
+        servidor.Post("api/v1/faturas", [this](const httplib::Request& req, httplib::Response& res){
+            try
+            {
+                json j = json::parse(req.body);
+                Fatura fatura = jsonToFatura(j);
+                m_faturaService.emitir(fatura.getID());
+                res.set_content(faturaToJSON(fatura).dump(), "application/json");
+                res.status = 201;
+            }
+        });
+    }
 };

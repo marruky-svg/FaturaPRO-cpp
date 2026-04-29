@@ -141,4 +141,18 @@ class FaturaService
         m_faturaRepo.atualizar(fatura);
 
     }
+
+    void deletarRascunho(int id)
+    {
+        auto procuraFatura = m_faturaRepo.buscarPorID(id);
+        if(!procuraFatura.has_value())
+            throw std::runtime_error("Fatura não existe");
+    
+        Fatura fatura = *procuraFatura;
+
+        if(fatura.getEstadoFatura() != EstadoFatura::Rascunho)
+            throw std::runtime_error("Fatura indisponível para alteração");
+        
+        m_faturaRepo.remover(id);
+    }
 };

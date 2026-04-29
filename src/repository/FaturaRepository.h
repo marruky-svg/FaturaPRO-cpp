@@ -223,4 +223,28 @@ class FaturaRepository
             throw;
         }
     }
+
+    void remover(int id)
+    {
+        m_db.executar("BEGIN TRANSACTION");
+
+        try
+        {
+            Statement stmt_del_linha(m_db.obterHandle(), "DELETE FROM linhas_fatura WHERE id_fatura = ?");
+            stmt_del_linha.vincularInteiro(1,id);
+            stmt_del_linha.passo();
+            
+            // POR NORMA LEGAL SEMPRE SERA DELETADO E/OU ALTERADA FATURAS EM ESTADO RASCUNHO
+            Statement stmt_del_fatura(m_db.obterHandle(), "DELETE FROM faturas WHERE id = ?");
+            stmt_del_fatura.vincularInteiro(1,id);
+            stmt_del_fatura.passo();
+
+            m_db.executar("COMMIT");
+        }
+        catch(...)
+        {
+            m_db.executar("ROLLBACK");
+            throw;
+        }
+    }
 };
