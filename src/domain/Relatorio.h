@@ -26,3 +26,17 @@ struct TopProduto
     int quantidade_vendida = 0;
     double total_faturado = 0;
 };
+
+struct FaturaPorEstado 
+{
+    std::string estado;
+    int total = 0;
+};
+
+struct IvaPorTaxa
+{
+    double taxa = 0;
+    //Total sem iva
+    double total_subtotal = 0;
+    double total_iva = 0;
+};
