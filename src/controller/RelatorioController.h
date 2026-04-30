@@ -9,7 +9,7 @@ class RelatorioController
     private:
     RelatorioService& m_relatorioService;
 
-    json faturacaoPorPeriodoToJSON(FaturacaoPorPeriodo f) const 
+    json faturacaoPorPeriodoToJSON(FaturacaoPorPeriodo& f) 
     {
         json j;
         j["data_inicio"] = f.data_inicio;
@@ -22,7 +22,7 @@ class RelatorioController
         return j;
     }
 
-    json topClientesToJSON(TopCliente c) const 
+    json topClientesToJSON(TopCliente& c) 
     {
         json j;
         j["id_cliente"] = c.id_cliente;
@@ -33,7 +33,7 @@ class RelatorioController
         return j;
     }
 
-    json topProdutosToJSON(TopProduto p) const 
+    json topProdutosToJSON(TopProduto& p) 
     {
         json j; 
         j["id_produto"] = p.id_produto;
@@ -44,7 +44,7 @@ class RelatorioController
         return j;
     }
 
-    json faturaPorEstadoToJSON(FaturaPorEstado f) const 
+    json faturaPorEstadoToJSON(FaturaPorEstado& f) 
     {
         json j; 
         j["estado"] = f.estado;
@@ -53,7 +53,7 @@ class RelatorioController
         return j;
     }
 
-    json ivaPorTaxaToJSON(IvaPorTaxa taxa) const 
+    json ivaPorTaxaToJSON(IvaPorTaxa& taxa) 
     {
         json j;
         j["taxa"] = taxa.taxa;
@@ -67,15 +67,15 @@ class RelatorioController
     RelatorioController(RelatorioService& rs)
     :m_relatorioService(rs){}
 
-    void registrarRotas(httplib::Server servidor)
+    void registrarRotas(httplib::Server& servidor)
     {
         servidor.Get("/api/v1/relatorios/faturacao", [this](const httplib::Request& req, httplib::Response& res){
             try 
             {
                 std::string dataInicio = req.get_param_value("data_inicio");
                 std::string dataFim = req.get_param_value("data_fim");
-
-                res.set_content(faturacaoPorPeriodoToJSON(m_relatorioService.faturacaoPorPeriodo(dataInicio, dataFim)).dump(), "application/json");
+                FaturacaoPorPeriodo faturacao = m_relatorioService.faturacaoPorPeriodo(dataInicio, dataFim);
+                res.set_content(faturacaoPorPeriodoToJSON(faturacao).dump(), "application/json");
                 res.status = 200;
             }
             catch(std::runtime_error& e)
@@ -93,7 +93,7 @@ class RelatorioController
                 int limite = limiteStr.empty() ? 5 : std::stoi(limiteStr);
                 json arr = json::array();
                 auto topClientes = m_relatorioService.topClientes(limite);
-                for(const auto& topCliente : topClientes)
+                for(auto& topCliente : topClientes)
                     arr.push_back(topClientesToJSON(topCliente));
                 res.set_content(arr.dump(), "application/json");
                 res.status = 200;
@@ -114,7 +114,7 @@ class RelatorioController
                 int limite = limiteStr.empty() ? 5 : std::stoi(limiteStr);
                 json arr = json::array();
                 auto topProdutos = m_relatorioService.topProdutos(limite);
-                for(const auto& topProduto : topProdutos)
+                for(auto& topProduto : topProdutos)
                     arr.push_back(topProdutosToJSON(topProduto));
                 res.set_content(arr.dump(), "application/json");
                 res.status = 200;
@@ -133,7 +133,7 @@ class RelatorioController
             {
                 json arr = json::array();
                 auto faturas = m_relatorioService.faturasPorEstado();
-                for(const auto& fatura : faturas)
+                for(auto& fatura : faturas)
                     arr.push_back(faturaPorEstadoToJSON(fatura));
                 res.set_content(arr.dump(), "application/json");
                 res.status = 200;
@@ -154,7 +154,7 @@ class RelatorioController
                 std::string dataFim = req.get_param_value("data_fim"); 
                 json arr = json::array();
                 auto taxas = m_relatorioService.ivaPorTaxa(dataInicio, dataFim);
-                for(const auto& taxa : taxas)
+                for(auto& taxa : taxas)
                     arr.push_back(ivaPorTaxaToJSON(taxa));
                 res.set_content(arr.dump(), "application/json");
                 res.status = 200;
@@ -168,7 +168,4 @@ class RelatorioController
             }
         });
     }
-   
-
-    
 };  
