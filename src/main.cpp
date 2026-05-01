@@ -14,11 +14,16 @@
 #include "controller/RelatorioController.h"
 #include <httplib.h>
 #include <iostream>
+#include <cstdlib>
+#include <ctime>
 
 int main()
 {
     try
     {
+        //INICIALIZA COM TIMESTAMP ATUAL
+        srand(time(nullptr));
+        
         Database db("faturapro.db");
         GestorMigracoes gm(db, "migrations");
         gm.aplicar();
