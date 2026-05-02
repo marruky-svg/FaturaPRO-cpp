@@ -61,6 +61,7 @@ curl http://localhost:8081/api/v1/clientes -H "X-API-Key: YOUR_KEY"
 
 ## Architecture
 
+```
 HTTP Server (port 8081)
                     │
                     ▼
@@ -77,7 +78,7 @@ HTTP Server (port 8081)
                     │
                     ▼
                  SQLite3 ──> Persistence
-
+```
 ## REST Endpoints
 
 All endpoints require the `X-API-Key` header.
