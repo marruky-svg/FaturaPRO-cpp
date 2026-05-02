@@ -61,4 +61,11 @@ class UtilizadorRepository
         return utilizador;
         
     }
+
+    int contar()
+    {
+        Statement stmt(m_db.obterHandle(), "SELECT COUNT(*) FROM utilizadores");
+        stmt.passo();
+        return stmt.obterInteiro(0);
+    }
 };

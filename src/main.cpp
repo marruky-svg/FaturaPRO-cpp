@@ -39,7 +39,6 @@ int main()
         RelatorioRepository r_repo(db);
         UtilizadorRepository u_repo(db);
 
-
         // Services & Autenticador
         ClienteService c_service(c_repo);
         ProdutoService p_service(p_repo);
@@ -55,6 +54,21 @@ int main()
 
         // Servidor
         httplib::Server servidor;
+
+        //Bootstrap: criar utilizador admin se BD vazia
+        if(u_repo.contar() == 0)
+        {
+            Utilizador admin("Admin", "admin@faturapro.local", autenticador.gerarApiKey());
+            admin.setCriadoEm(dataAtual());
+            u_repo.guardar(admin);
+
+
+        std::cout << "===========================================" << std::endl;
+        std::cout << "Primeiro utilizador criado!" << std::endl;
+        std::cout << "API Key: " << admin.getApiKey() << std::endl;
+        std::cout << "Guarda esta key — não voltarás a vê-la." << std::endl;
+        std::cout << "===========================================" << std::endl;
+        }
 
         //Middleware de autenticacao - corre antes de qualquer rota
         servidor.set_pre_routing_handler([&autenticador](const httplib::Request& req, httplib::Response& res){
